@@ -7,6 +7,7 @@ using System.Diagnostics;
 using static Air3550.Constants.AppConstants;
 using Air3550.Models;
 using Air3550.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Air3550.Utils
 {
@@ -15,7 +16,7 @@ namespace Air3550.Utils
     /// </summary>
     public class FlightUtils
     {
-        static Random random = new();
+        static readonly Random random = new();
 
         /// <summary>
         /// Get straight line distance between two airports in miles
@@ -42,18 +43,31 @@ namespace Air3550.Utils
             return (int) (d * 0.62137119224);
         }
 
+        /// <summary>
+        /// Calculate total cost for the flight
+        /// 7pm - 12am || 5am - 8 am= 10% discout, 12 am - 5am = 20% discount
+        /// </summary>
+        /// <param name="departureTime"></param>
+        /// <param name="arrivalTime"></param>
+        /// <param name="distance"></param>
+        /// <returns></returns>
         private static double FlightCost(DateTime departureTime, DateTime arrivalTime, int distance)
         {
             int fixedCost = 50;
             double distanceCost = 0.12 * distance;
             int tsaFee = 8;
+            double totalCost = fixedCost + distanceCost + tsaFee;
+            
+            if (departureTime.Hour < 5)
+            {
+                totalCost -= 0.2 * totalCost;
+            }
+            else if ((departureTime.Hour >= 5 && departureTime.Hour < 8) || arrivalTime.Hour >= 19)
+            {
+                totalCost -= 0.1 * totalCost;
+            }
 
-            return 50 + 0.12 * distance + 8;
-        }
-
-        private static double FlightTime(int distance)
-        {
-            return distance;
+            return totalCost;
         }
 
         /// <summary>
@@ -61,71 +75,103 @@ namespace Air3550.Utils
         /// </summary>
         /// <param name="startDate"> arrival date (not time)</param>
         /// <param name="distance"> distance between two airports</param>
-        /// <returns>Tuple of departure time and arrival time</returns>
-        private static Tuple<DateTime, DateTime> generateFlightTime(DateTime startDate ,int distance)
+        /// <returns>Tuple of departure date and arrival date</returns>
+        private static Tuple<DateTime, DateTime> GenerateFlightDate(DateTime startDate ,int distance)
         {
             DateTime departureDateTime = startDate.AddMinutes(random.Next(0, 1439));
-            DateTime arrivalDateTime = departureDateTime.AddMinutes((30 + 60 / 500 * distance));
-
+            DateTime arrivalDateTime = departureDateTime.AddMinutes((int)(30 + 60d / 500 * distance));
             return new Tuple<DateTime, DateTime>(departureDateTime, arrivalDateTime);
         }
 
         /// <summary>
-        /// Generates flights for upto 6 month in advance
+        /// Generate and insert flights for upto 6 month in advance
         /// </summary>
         public static void InsertFlights()
         {
-            using var db = new AppDBContext();
-            var tillDate = db.SystemInfos.FirstOrDefault(s => s.Type == SystemInfoType.FLIGHTS_GENERATED_TILL);
+            int count = 0;
             int totalDays = 180;
-            DateTime startDate;
-            if (tillDate == null || (tillDate.FlightsGeneratedTill - DateTime.Now).Days < 0)
+            DateTime startDate = DateTime.Now.Date;
+
+
+            Debug.WriteLine("SEEDING FLIGHTS");
+            using var db = new AppDBContext();
+            var flightGeneratedInfo = db.SystemInfos.Where(s => s.Type == SystemInfoType.FLIGHTS_GENERATED_TILL).FirstOrDefault();
+            if (flightGeneratedInfo == null)
             {
-                startDate = DateTime.Now;
+                db.SystemInfos.Add(new SystemInfo() { Type = SystemInfoType.FLIGHTS_GENERATED_TILL, FlightsGeneratedTill = DateTime.Now.Date.AddDays(totalDays) });
+                db.SaveChanges();
+            }
+            else if (flightGeneratedInfo.FlightsGeneratedTill.AddDays(180).Date != DateTime.Now.Date)
+            {
+                startDate = flightGeneratedInfo.FlightsGeneratedTill.AddDays(1);
+                totalDays = 180 - (flightGeneratedInfo.FlightsGeneratedTill.Date - DateTime.Now.Date).Days;
             }
             else
             {
-                startDate = tillDate.FlightsGeneratedTill.AddDays(1);
-                totalDays = 180 - (tillDate.FlightsGeneratedTill - DateTime.Now).Days;
+                return;
             }
-
             
-            Airport sourceAirport;
-            Airport destAirport;
+            Debug.WriteLine("OLA: " + (startDate.AddDays(totalDays).Date - startDate.Date).Days);
+
+            int sourceAirportId;
+            int destAirportId;
+            Airport sourceAirport = default;
+            Airport destAirport = default;
             int flightDistance;
-            int price;
-            Plane plane;
-            DateTime departureTime;
-            DateTime arrivalTime;
+            double price;
+            int planeModel;
+            DateTime departureDate;
+            DateTime arrivalDate;
 
             for (int i = 0; i < totalDays; i++)
             {
                 // 40 flights everyday
                 for (int j = 0; j < 40; j++)
                 {
-                    sourceAirport = AIRPORTS[random.Next(0, 10)];
-                    List<Airport> temp = AIRPORTS.Where(a => a.Name != sourceAirport.Name).ToList();
-                    destAirport = temp[random.Next(0, 9)];
-                    flightDistance = DistanceBetweenAirports(sourceAirport, destAirport);
-                    if (flightDistance < 500)
+                    count++;
+                    flightDistance = 0;
+                    while (flightDistance < 500)
                     {
-                        plane = PLANES[0];
+                        sourceAirport = AIRPORTS[random.Next(0, 10)];
+                        List<Airport> temp = AIRPORTS.Where(a => a.Name != sourceAirport.Name).ToList();
+                        destAirport = temp[random.Next(0, 9)];
+                        flightDistance = DistanceBetweenAirports(sourceAirport, destAirport);
                     }
-                    else if (flightDistance < 1000)
+                    sourceAirportId = sourceAirport.Id;
+                    destAirportId = destAirport.Id;
+                    
+                    if (flightDistance < 1000)
                     {
-                        plane = PLANES[1];
+                        planeModel = PLANES[0].Model;
+                    }
+                    else if (flightDistance < 1500)
+                    {
+                        planeModel = PLANES[1].Model;
                     }
                     else
                     {
-                        plane = PLANES[2];
+                        planeModel = PLANES[2].Model;
                     }
-                    (departureTime, arrivalTime) = generateFlightTime(startDate.Date.AddDays(i), flightDistance);
-                    if (departureTime.Date != arrivalTime.Date)
+                    (departureDate, arrivalDate) = GenerateFlightDate(startDate.Date.AddDays(i), flightDistance);
+                    price = FlightCost(departureDate, arrivalDate, flightDistance);
+                    Flight flight = new()
                     {
-                        Debug.WriteLine(sourceAirport.Name + " : " + departureTime + "   -------------   " + destAirport.Name + " : " + arrivalTime);
-                    }
+                        PlaneModel = planeModel,
+                        ArrivalDate = arrivalDate,
+                        DepartureDate = departureDate,
+                        SourceAirportId = sourceAirportId,
+                        DestinationAirportId = destAirportId,
+                        Price = price,
+                        PointsGenerated = (int)(10 * price),
+                        Distance = flightDistance,
+                        SourceCity = sourceAirport.City,
+                        DestCity = destAirport.City
+                    };
+                    db.Flights.Add(flight);
                 }
             }
+            db.SaveChanges();
+            Debug.WriteLine(count + " FLIGHTS ADDED");
         }
     }
 }

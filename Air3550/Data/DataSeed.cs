@@ -19,7 +19,7 @@ namespace Air3550.Data
 
             using var db = new AppDBContext();
             
-            var airport = db.Airports.FirstOrDefault(a => a.Longitude != -1);
+            var airport = db.Airports.FirstOrDefault(a => a.Id!= -1);
             if (airport == null)
             {
                 Debug.WriteLine("SEEDING AIRPORTS");
@@ -27,14 +27,13 @@ namespace Air3550.Data
                 db.SaveChangesAsync();
             }
 
-            var plane = db.Planes.FirstOrDefault( p => p.Capacity != -1);
+            var plane = db.Planes.FirstOrDefault( p => p.Model != -1);
             if (plane == null)
             {
                 Debug.WriteLine("SEEDING PLANES");
                 db.Planes.AddRange(PLANES);
                 db.SaveChangesAsync();
             }
-
             FlightUtils.InsertFlights();
         }
     }

@@ -6,13 +6,9 @@ using System.Threading.Tasks;
 
 namespace Air3550.Models
 {
-    public enum UserType
+    public class FlightManifest
     {
-        CUSTOMER,
-        LOAD_ENGINEER,
-        MARKETING_MANAGER,
-        FLIGHT_MANAGER,
-        ACCOUNTING_MANAGER,
-        ADMIN
+        public int FlightId { get; set; }
+        public Dictionary<long, String> PassengerInfo { get; set; }
     }
 }

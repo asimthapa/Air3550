@@ -14,6 +14,6 @@ namespace Air3550
     /// </summary>
     public partial class App : Application
     {
-        public static string LoggedUser { get; set; }
+        public static User LoggedUser { get; set; }
     }
 }
