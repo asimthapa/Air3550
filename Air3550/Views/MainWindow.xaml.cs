@@ -1,4 +1,4 @@
-﻿using System.Windows;
+﻿/*using System.Windows;
 using System.Diagnostics;
 using Air3550.Data;
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +21,13 @@ namespace Air3550.Views
             db.Database.Migrate();
             DataSeed.SeedInitData();
 
-            if (true)
+            /*if (true)
             {
-                Debug.WriteLine("ASIM");
-                MainFrame.Navigate(new SignInPage());
+                //Debug.WriteLine("ASIM");
+                //MainFrame.Navigate(new SignInPage());
             }
+
         }
     }
 }
+*/

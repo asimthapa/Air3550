@@ -10,25 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Diagnostics;
 
 namespace Air3550.Views
 {
     /// <summary>
-    /// Interaction logic for SignInPage.xaml
+    /// Interaction logic for CustomerSignUp.xaml
     /// </summary>
-    public partial class SignInPage : Page
+    public partial class CustomerSignUp : Window
     {
-        public SignInPage()
+        public CustomerSignUp()
         {
             InitializeComponent();
-        }
-
-        private void SignIn(object sender, RoutedEventArgs e)
-        {
-           // Debug.WriteLine(UserId.Text);
         }
     }
 }
