@@ -2,6 +2,7 @@
 {
     public enum SystemInfoType
     {
-        FLIGHTS_GENERATED_TILL
+        FLIGHTS_GENERATED_TILL,
+        LOGGED_USER_ID
     }
 }

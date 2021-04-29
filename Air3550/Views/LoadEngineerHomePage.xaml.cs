@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Air3550.Views
 {
     /// <summary>
-    /// Interaction logic for CustViewAccntHist.xaml
+    /// Interaction logic for LoadEngineerHomePage.xaml
     /// </summary>
-    public partial class CustViewAccntHist : Window
+    public partial class LoadEngineerHomePage : Page
     {
-        public CustViewAccntHist()
+        public LoadEngineerHomePage()
         {
             InitializeComponent();
         }

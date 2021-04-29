@@ -10,6 +10,11 @@ namespace Air3550.Services
 {
     public class FlightService
     {
+        private readonly ApplicationDbContext dbContext = new();
+        private readonly PaymentService paymentService;
+
+        public FlightService() {}
+
         /// <summary>
         /// get list of flights based on given queries
         /// </summary>
@@ -19,8 +24,12 @@ namespace Air3550.Services
         /// <returns> list of flights</returns>
         public List<Flight> GetFlights(string sourceCity, string destCity, DateTime departDate)
         {
-            using var db = new AppDBContext();
-            return (List<Flight>)db.Flights.Where(flight => flight.DepartureDate.Date == departDate.Date && flight.SourceCity == sourceCity && flight.DestCity == destCity);
+            return dbContext.Flights
+                .Where(
+                flight => 
+                flight.DepartureDate.Date == departDate.Date && 
+                flight.SourceCity.ToLower() == sourceCity.ToLower() && 
+                flight.DestCity.ToLower() == destCity.ToLower()).ToList<Flight>();
         }
 
         /// <summary>
@@ -29,17 +38,17 @@ namespace Air3550.Services
         /// <param name="flightBookInfo"> Flight info to book a flight</param>
         public void BookFlight(FlightBookInfo flightBookInfo)
         {
-            using var db = new AppDBContext();
-            var flight = db.Flights.Find(flightBookInfo.FlightId);
+            var flight = dbContext.Flights.Find(flightBookInfo.FlightId);
             if (flight != null)
             {
-                var plane = db.Planes.Find(flight.PlaneModel);
+
+                var plane = dbContext.Planes.Find(flight.PlaneModel);
                 if (flight.SeatsBooked < plane.Capacity)
                 {
                     flight.SeatsBooked++;
-                    db.Flights.Update(flight);
-                    db.FlightBookInfos.Add(flightBookInfo);
-                    db.SaveChanges();
+                    dbContext.Flights.Update(flight);
+                    dbContext.FlightBookInfos.Add(flightBookInfo);
+                    dbContext.SaveChanges();
                 }
             }
         }
@@ -50,18 +59,17 @@ namespace Air3550.Services
         /// <param name="flightBookInfo"></param>
         public void CancelFlight(FlightBookInfo flightBookInfo)
         {
-            using var db = new AppDBContext();
-            var flight = db.Flights.Find(flightBookInfo.FlightId);
+            var flight = dbContext.Flights.Find(flightBookInfo.FlightId);
             if (flight != null && (flight.DepartureDate - DateTime.Now).TotalHours > 24)
             {
                 flightBookInfo.FlightStatus = FlightStatus.CANCELLED;
-                db.FlightBookInfos.Update(flightBookInfo);
+                dbContext.FlightBookInfos.Update(flightBookInfo);
 
                 flight.SeatsBooked--;
-                db.Flights.Update(flight);
-                db.SaveChanges();
+                dbContext.Flights.Update(flight);
+                dbContext.SaveChanges();
                 
-                PaymentService.Refund(flightBookInfo.UserId, flightBookInfo.PaymentType, flightBookInfo.PaymentAmount);
+                paymentService.Refund(flightBookInfo.UserId, flightBookInfo.PaymentType, flightBookInfo.PaymentAmount);
             }
         }
     
@@ -71,14 +79,13 @@ namespace Air3550.Services
         /// <param name="flightId"> id of take off flight</param>
         public void UpdateFlightStatusToTaken(int flightId)
         {
-            using var db = new AppDBContext();
-            var infos = db.FlightBookInfos.Where(fbi => fbi.FlightId == flightId && fbi.FlightStatus == FlightStatus.BOOKED);
+            var infos = dbContext.FlightBookInfos.Where(fbi => fbi.FlightId == flightId && fbi.FlightStatus == FlightStatus.BOOKED);
             foreach(var info in infos)
             {
                 info.FlightStatus = FlightStatus.TAKEN;
             }
-            db.FlightBookInfos.UpdateRange(infos);
-            db.SaveChangesAsync();
+            dbContext.FlightBookInfos.UpdateRange(infos);
+            dbContext.SaveChangesAsync();
         }
 
         /// <summary>
@@ -87,10 +94,9 @@ namespace Air3550.Services
         /// <param name="userId"> user Id</param>
         /// <param name="status">flight status</param>
         /// <returns>list of flights based on passed queries</returns>
-        public static List<Flight> GetFlights(int userId, FlightStatus status)
+        public List<Flight> GetFlights(int userId, FlightStatus status)
         {
-            using var db = new AppDBContext();
-            return (List<Flight>)db.FlightBookInfos.Where(fbi => fbi.UserId == userId && fbi.FlightStatus == status);
+            return (List<Flight>)dbContext.FlightBookInfos.Where(fbi => fbi.UserId == userId && fbi.FlightStatus == status);
         }
     }
 }

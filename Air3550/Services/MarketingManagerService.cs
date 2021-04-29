@@ -10,25 +10,25 @@ namespace Air3550.Services
 {
     public class MarketingManagerService
     {
+        private readonly ApplicationDbContext dbContext;
 
         /// <summary>
         /// Update which plane to use. Only Marketing manager can do it.
         /// </summary>
         /// <param name="employee">employee making change</param>
         /// <param name="model">plane model to use</param>
-        public static void UpdateFlightDate(Employee employee, int flightId, int planeModel)
+        public void UpdateFlightDate(Employee employee, int flightId, int planeModel)
         {
             if (employee.Type != EmployeeType.MARKETING_MANAGER)
             {
                 return;
             }
-            using var db = new AppDBContext();
-            var flight = db.Flights.Find(flightId);
-            if (flight != null && db.Planes.Find(planeModel) != null)
+            var flight = dbContext.Flights.Find(flightId);
+            if (flight != null && dbContext.Planes.Find(planeModel) != null)
             {
                 flight.PlaneModel = planeModel;
-                db.Flights.Update(flight);
-                db.SaveChanges();
+                dbContext.Flights.Update(flight);
+                dbContext.SaveChanges();
             }
         }
     }

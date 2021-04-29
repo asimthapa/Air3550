@@ -86,6 +86,6 @@ namespace Air3550.Constants
         };
 
         // Program Name
-        public static readonly string PROGRAM_NAME = "Air-3550";
+        public static readonly string PROJECT_NAME = "Air-3550";
     }
 }

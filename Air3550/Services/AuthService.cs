@@ -10,6 +10,13 @@ namespace Air3550.Services
 {
     public class AuthService
     {
+        private readonly ApplicationDbContext dbContext;
+
+        public AuthService(ApplicationDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
+
         /// <summary>
         /// log in user
         /// </summary>
@@ -19,14 +26,13 @@ namespace Air3550.Services
         public Boolean Login(string id, string password)
         {
             User user;
-            using var db = new AppDBContext();
 
             if (id[0] == 'A')
             {
                 id = id[1..];
-                user = db.Employees.Find(id);
+                user = dbContext.Employees.Find(id);
             }
-            user = db.Customers.Find(id);
+            user = dbContext.Customers.Find(id);
 
             if (user != null)
             {

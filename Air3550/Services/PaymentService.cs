@@ -11,64 +11,67 @@ namespace Air3550.Services
 {
     public class PaymentService
     {
-        public void PayUsingMoney(Transaction ts)
+
+        private readonly ApplicationDbContext dbContext;
+
+        public PaymentService(ApplicationDbContext dbContext)
         {
-            using var db = new AppDBContext();
-            db.Transactions.Add(ts);
-            db.SaveChanges();
+            this.dbContext = dbContext;
+        }
+
+        public void PayUsingMoney(Transaction ts, int pointsGenerated)
+        {
+            dbContext.Transactions.Add(ts);
+            dbContext.SaveChanges();
         }
 
         public void PayUsingCredit(int customerId, int creditAmount)
         {
-            using var db = new AppDBContext();
-            Customer customer = db.Customers.Find(customerId);
+            Customer customer = dbContext.Customers.Find(customerId);
             if (customer != null && creditAmount <= customer.Credits)
             {
                 customer.Credits -= creditAmount;
-                db.Customers.Update(customer);
-                db.SaveChanges();
+                dbContext.Customers.Update(customer);
+                dbContext.SaveChanges();
             }
         }
 
         public void PayUsingPoints(int customerId, int points)
         {
-            using var db = new AppDBContext();
-            Customer customer = db.Customers.Find(customerId);
+            Customer customer = dbContext.Customers.Find(customerId);
             if (customer != null && points <= customer.PointsAvailable)
             {
                 customer.PointsAvailable -= points;
                 customer.PointsUsed += points;
-                db.Customers.Update(customer);
-                db.SaveChanges();
+                dbContext.Customers.Update(customer);
+                dbContext.SaveChanges();
             }
         }
 
-        public static void RefundMoneyOrCredit(int customerId, int creditAmount)
+        public void RefundMoneyOrCredit(int customerId, int creditAmount)
         {
-            using var db = new AppDBContext();
-            Customer customer = db.Customers.Find(customerId);
+            Customer customer = dbContext.Customers.Find(customerId);
             if (customer != null)
             {
                 customer.Credits += creditAmount;
-                db.Customers.Update(customer);
-                db.SaveChanges();
+                dbContext.Customers.Update(customer);
+                dbContext.SaveChanges();
             }
         }
 
-        public static void RefundPoints(int customerId, int points)
+        public void RefundPoints(int customerId, int points)
         {
-            using var db = new AppDBContext();
-            Customer customer = db.Customers.Find(customerId);
+            Customer customer = dbContext.Customers.Find(customerId);
             if (customer != null)
             {
                 customer.PointsAvailable += points;
                 customer.PointsUsed -= points;
-                db.Customers.Update(customer);
-                db.SaveChanges();
+                dbContext.Customers.Update(customer);
+                dbContext.SaveChanges();
             }
         }
 
-        public static void Refund(int userId, PaymentType paymentType, int amount)
+        public void Refund(int userId, PaymentType paymentType, int amount)
         {
             switch(paymentType)
             {

@@ -5,16 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Air3550.Views"
         mc:Ignorable="d"
-        Title="" Height="450" Width="800">
+        Title="Air-3550" Height="450" Width="800" MinHeight="680" MinWidth="800">
+    
     <Grid>
+        <!--<Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Panel.ZIndex="1" />-->
         <Frame x:Name="MainFrame"/>
-        <TextBlock HorizontalAlignment="Center" Margin="10,10,0,0" Text="Welcome to Air-3550" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="404" FontSize="30" FontFamily="Arial Black" TextDecorations="Underline"/>
-        <TextBlock HorizontalAlignment="Center" Margin="0,55,0,0" Text="Please select user type" TextWrapping="Wrap" VerticalAlignment="Top" Height="43" Width="294" FontSize="24"/>
-        <Button Content="Customer" HorizontalAlignment="Left" Margin="162,168,0,0" VerticalAlignment="Top" Height="49" Width="114"/>
-        <Button Content="Load Engineer" HorizontalAlignment="Left" Margin="347,103,0,0" VerticalAlignment="Top" Height="49" Width="115"/>
-        <Button Content="Marketing Manager" HorizontalAlignment="Right" Margin="0,168,193,0" VerticalAlignment="Top" Height="49" Width="115"/>
-        <Button Content="Flight Manager" HorizontalAlignment="Left" Margin="161,288,0,0" VerticalAlignment="Top" Height="49" Width="115"/>
-        <Button Content="Accounting Manager" HorizontalAlignment="Left" Margin="348,350,0,0" VerticalAlignment="Top" Height="49" Width="114" FontSize="12"/>
-        <Button Content="Admin" HorizontalAlignment="Left" Margin="492,283,0,0" VerticalAlignment="Top" Height="50" Width="115" FontSize="12"/>
     </Grid>
 </Window>

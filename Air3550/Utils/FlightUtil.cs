@@ -14,7 +14,7 @@ namespace Air3550.Utils
     /// <summary>
     /// Util class for Flight
     /// </summary>
-    public class FlightUtils
+    public class FlightUtil
     {
         static readonly Random random = new();
 
@@ -88,18 +88,16 @@ namespace Air3550.Utils
         /// </summary>
         public static void InsertFlights()
         {
+            using var dbContext = new ApplicationDbContext();
             int count = 0;
             int totalDays = 180;
             DateTime startDate = DateTime.Now.Date;
 
-
-            Debug.WriteLine("SEEDING FLIGHTS");
-            using var db = new AppDBContext();
-            var flightGeneratedInfo = db.SystemInfos.Where(s => s.Type == SystemInfoType.FLIGHTS_GENERATED_TILL).FirstOrDefault();
+            var flightGeneratedInfo = dbContext.SystemInfos.Where(s => s.Type == SystemInfoType.FLIGHTS_GENERATED_TILL).FirstOrDefault();
             if (flightGeneratedInfo == null)
             {
-                db.SystemInfos.Add(new SystemInfo() { Type = SystemInfoType.FLIGHTS_GENERATED_TILL, FlightsGeneratedTill = DateTime.Now.Date.AddDays(totalDays) });
-                db.SaveChanges();
+                dbContext.SystemInfos.Add(new SystemInfo() { Type = SystemInfoType.FLIGHTS_GENERATED_TILL, FlightsGeneratedTill = DateTime.Now.Date.AddDays(totalDays) });
+                dbContext.SaveChanges();
             }
             else if (flightGeneratedInfo.FlightsGeneratedTill.AddDays(180).Date != DateTime.Now.Date)
             {
@@ -111,8 +109,6 @@ namespace Air3550.Utils
                 return;
             }
             
-            Debug.WriteLine("OLA: " + (startDate.AddDays(totalDays).Date - startDate.Date).Days);
-
             int sourceAirportId;
             int destAirportId;
             Airport sourceAirport = default;
@@ -167,10 +163,10 @@ namespace Air3550.Utils
                         SourceCity = sourceAirport.City,
                         DestCity = destAirport.City
                     };
-                    db.Flights.Add(flight);
+                    dbContext.Flights.Add(flight);
                 }
             }
-            db.SaveChanges();
+            dbContext.SaveChanges();
             Debug.WriteLine(count + " FLIGHTS ADDED");
         }
     }

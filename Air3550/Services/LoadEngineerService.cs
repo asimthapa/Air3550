@@ -10,6 +10,9 @@ namespace Air3550.Services
 {
     public class LoadEngineerService
     {
+
+        private readonly ApplicationDbContext dbContext;
+
         /// <summary>
         /// Update Flight Date. Only Load Engineer can do it
         /// </summary>
@@ -17,20 +20,19 @@ namespace Air3550.Services
         /// <param name="flightId">flight id</param>
         /// <param name="arrivalDate">new arrival date</param>
         /// <param name="departDate"> new depart date</param>
-        public static void UpdateFlightDate(Employee employee, int flightId, DateTime arrivalDate, DateTime departDate)
+        public void UpdateFlightDate(Employee employee, int flightId, DateTime arrivalDate, DateTime departDate)
         {
             if (employee.Type != EmployeeType.LOAD_ENGINEER)
             {
                 return;
             }
-            using var db = new AppDBContext();
-            var flight = db.Flights.Find(flightId);
+            var flight = dbContext.Flights.Find(flightId);
             if (flight != null)
             {
                 flight.ArrivalDate = arrivalDate;
                 flight.DepartureDate = departDate;
-                db.Flights.Update(flight);
-                db.SaveChanges();
+                dbContext.Flights.Update(flight);
+                dbContext.SaveChanges();
             }
         }
     }

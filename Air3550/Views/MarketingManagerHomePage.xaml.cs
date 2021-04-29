@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Air3550.Views.Load_Engineer
+namespace Air3550.Views
 {
     /// <summary>
-    /// Interaction logic for LoadEngineerHome.xaml
+    /// Interaction logic for MarketingManagerHomePage.xaml
     /// </summary>
-    public partial class LoadEngineerHome : Window
+    public partial class MarketingManagerHomePage : Page
     {
-        public LoadEngineerHome()
+        public MarketingManagerHomePage()
         {
             InitializeComponent();
         }

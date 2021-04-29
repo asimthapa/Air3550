@@ -10,14 +10,12 @@ namespace Air3550.Models
 {
     public class Customer: User
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Required]
         public long PointsAvailable { get; set; }
         public long PointsUsed { get; set; }
         public int Credits { get; set; }
         public Address Address { get; set; }
         public long PhoneNumber { get; set; }
         public DateTime BirthDate { get; set; }
-        public long CreditCard { get; set; }
+        public long CreditCardNumber { get; set; }
     }
 }

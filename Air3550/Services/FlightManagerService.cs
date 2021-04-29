@@ -10,20 +10,22 @@ namespace Air3550.Services
 {
     public class FlightManagerService
     {
+        private readonly ApplicationDbContext dbContext;
+
         /// <summary>
         /// Generate Flight Manifest. Only Flight Manager is authorized.
         /// </summary>
         /// <param name="employee"> employee generating flight manifest</param>
         /// <param name="flightId"></param>
         /// <returns>Flight Manifest</returns>
-        public static FlightManifest GetFlightManifest(Employee employee, int flightId)
+        public FlightManifest GetFlightManifest(Employee employee, int flightId)
         {
             if (employee.Type != EmployeeType.FLIGHT_MANAGER)
             {
                 return null;
             }
-            using var db = new AppDBContext();
-            List<FlightBookInfo> fbis = db.FlightBookInfos.Where(fbi => fbi.FlightId == flightId && fbi.FlightStatus == FlightStatus.TAKEN).ToList();
+
+            List<FlightBookInfo> fbis = dbContext.FlightBookInfos.Where(fbi => fbi.FlightId == flightId && fbi.FlightStatus == FlightStatus.TAKEN).ToList();
             FlightManifest manifest = new()
             {
                 FlightId = flightId,
@@ -31,7 +33,7 @@ namespace Air3550.Services
             };
             foreach (var fInfo in fbis)
             {
-                var passenger = db.Customers.Find(fInfo.UserId);
+                var passenger = dbContext.Customers.Find(fInfo.UserId);
                 String fullName = passenger.FirstName + " " + passenger.LastName;
                 manifest.PassengerInfo.Add(fInfo.UserId, fullName);
             }

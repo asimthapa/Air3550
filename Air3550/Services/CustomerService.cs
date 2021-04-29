@@ -9,19 +9,30 @@ using System.Diagnostics;
 
 namespace Air3550.Services
 {
-    class CustomerService
+    public class CustomerService
     {
         /// <summary>
         /// Add new customer
         /// </summary>
         /// <param name="customer"> customer to add</param>
-        public void AddCustomer(Customer customer)
+        /// <returns>Newly created customer Id</returns>
+        public long AddCustomer(Customer customer)
         {
+            using var dbContext = new ApplicationDbContext();
             customer.Id = GenerateUserId();
-            using var db = new AppDBContext();
-            db.Customers.Add(customer);
-            db.SaveChanges();
-            Debug.WriteLine("Customer Added " + customer.Id);
+            dbContext.Customers.Add(customer);
+            dbContext.SaveChanges();
+            Debug.WriteLine("Customer Added: " + customer.Id);
+            return customer.Id;
+        }
+
+        public long AddCustomer(Customer customer, bool defaultFlag)
+        {
+            using var dbContext = new ApplicationDbContext();
+            dbContext.Customers.Add(customer);
+            dbContext.SaveChanges();
+            Debug.WriteLine("Customer Added: " + customer.Id);
+            return customer.Id;
         }
 
         /// <summary>
@@ -31,8 +42,8 @@ namespace Air3550.Services
         /// <returns>Customer found, or null</returns>
         public Customer GetCustomerById(long id)
         {
-            using var db = new AppDBContext();
-            Customer customer = db.Customers.Find(id);
+            using var dbContext = new ApplicationDbContext();
+            Customer customer = dbContext.Customers.Find(id);
             return customer;
         }
 
@@ -42,27 +53,26 @@ namespace Air3550.Services
         /// <param name="customer"> customer to update</param>
         public void UpdateCustomer(Customer customer)
         {
-            using var db = new AppDBContext();
-            db.Customers.Update(customer);
-            db.SaveChanges();
+            using var dbContext = new ApplicationDbContext();
+            dbContext.Customers.Update(customer);
+            dbContext.SaveChanges();
         }
 
         /// <summary>
         /// generate unique 6 digit user id
         /// </summary>
         /// <returns> unique 6 digit id</returns>
-        private int GenerateUserId()
+        private long GenerateUserId()
         {
-            using var db = new AppDBContext();
-            int id;
+            using var dbContext = new ApplicationDbContext();
+            long id;
             var rand = new Random();
             while (true)
             {
                 id = rand.Next(100000, 1000000);
-                var user = db.Customers.Find(id);
+                var user = dbContext.Customers.Find(id);
                 if (user == null) { return id; }
             }
         }
-
     }
 }

@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Air3550.Views.Flight_Manager
+namespace Air3550.Views
 {
     /// <summary>
-    /// Interaction logic for FlightManagerHome.xaml
+    /// Interaction logic for AccountingManagerHomePage.xaml
     /// </summary>
-    public partial class FlightManagerHome : Window
+    public partial class AccountingManagerHomePage : Page
     {
-        public FlightManagerHome()
+        public AccountingManagerHomePage()
         {
             InitializeComponent();
         }

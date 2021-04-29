@@ -8,9 +8,26 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SignInPage">
 
-    <StackPanel>
-        <TextBlock>SignIn page</TextBlock>
-        <TextBox Width="400" Text="Id" Name="UserId" Foreground="Red"></TextBox>
-        <Button Click="SignIn"/>
-    </StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Name="Title" FontSize="48" TextAlignment="Center" Grid.Row="0" />
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1">
+            <TextBlock FontSize="20" Text="User Id" TextAlignment="Center" Margin="0 0 0 5"/>
+            <TextBox Name="Id" FontSize="17" Width="200" Height="25" />
+            <TextBlock  FontSize="20" Text="Password" TextAlignment="Center" Margin="0 20 0 5"/>
+            <PasswordBox Name="Password" FontSize="17" Width="200" Height="25" />
+            <StackPanel Orientation="Horizontal" Margin="0 20 0 20">
+                <Button Name="SignInButton" Content="Sign In" Background="Orange" Height="40" Width="100" Margin="0 0 40 0" Click="OnSignIn"/>
+                <Button Name="SignUpButton" Content="Sign Up" Background="MediumAquamarine" Height="40" Width="100" Click="OnSignUp"/>
+            </StackPanel>
+            <Button Name="ForgotCredentialButton" Content="Forgot Credential ?" Background="Transparent" BorderThickness="0" Width="110" Click="OnForgotCredential"/>
+            <TextBlock Name="SignInError" FontSize="20" Foreground="Red" Text="Incorrect credential." TextAlignment="Center" Visibility="Collapsed"/>
+        </StackPanel>
+        <TextBlock FontSize="10" TextAlignment="Center" Grid.Row="2" Text="© 2021 Air-3550, Inc. It's Free Real Estate." VerticalAlignment="Bottom"/>
+    </Grid>
 </Page>

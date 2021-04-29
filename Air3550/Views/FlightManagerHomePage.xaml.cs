@@ -10,18 +10,24 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Air3550.Views.Marketing_Manager
+namespace Air3550.Views
 {
     /// <summary>
-    /// Interaction logic for MarketingManagerHome.xaml
+    /// Interaction logic for FlightManagerHomePage.xaml
     /// </summary>
-    public partial class MarketingManagerHome : Window
+    public partial class FlightManagerHomePage : Page
     {
-        public MarketingManagerHome()
+        public FlightManagerHomePage()
         {
             InitializeComponent();
+        }
+
+        private void OnBookFlight(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -1,11 +1,16 @@
-﻿/*using System.Windows;
+﻿using System.Windows;
 using System.Diagnostics;
 using Air3550.Data;
 using Microsoft.EntityFrameworkCore;
 
 using Air3550.Models;
 using static Air3550.Constants.AppConstants;
-using static Air3550.Utils.FlightUtils;
+using static Air3550.Utils.FlightUtil;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore.Sqlite;
+using Air3550.Services;
+using System;
+using Air3550.Utils;
 
 namespace Air3550.Views
 {
@@ -17,17 +22,14 @@ namespace Air3550.Views
         public MainWindow()
         {
             InitializeComponent();
-            using var db = new AppDBContext();
-            db.Database.Migrate();
-            DataSeed.SeedInitData();
+            
+        }
 
-            /*if (true)
-            {
-                //Debug.WriteLine("ASIM");
-                //MainFrame.Navigate(new SignInPage());
-            }
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
 
+            MainFrame.Navigate(new SignInPage());
         }
     }
 }
-*/
